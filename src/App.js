@@ -18,6 +18,8 @@ function App() {
 
       if (!rawData.ok) {
         throw new Error("Something is wrong!");
+      } else {
+        setError(false);
       }
 
       const moviesData = await rawData.json();
@@ -45,16 +47,26 @@ function App() {
   }, [fetchMoviesHandler]);
 
   async function addMovieHandler(movie) {
-    const response = await fetch("https://all-movie-store-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json", {
-      method : "POST",
-      body : JSON.stringify(movie),
-      headers : {
-        'Content-Type' : 'application/json'
-      }
-    });
+    try {
+      setIsLoading(true);
+      const response = await fetch("https://all-movie-store-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json", {
+        method : "POST",
+        body : JSON.stringify(movie),
+        headers : {
+          'Content-Type' : 'application/json'
+        }
+      });
 
-    const data = await response.json();
-    console.log(data);
+      if (!response.ok) {
+        throw new Error("Something is wrong!");
+      }
+
+      fetchMoviesHandler(); // for getting updated movies list
+    }
+    catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
   }
 
   let content = "Movies not found!";
