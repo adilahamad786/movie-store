@@ -12,8 +12,9 @@ function App() {
   const fetchMoviesHandler = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("https://swapi.dev/api/films/");
+      // const response = await fetch("https://swapi.dev/api/films/");
       // const response = await fetch("https://swapi.dev/api/film/"); // wrong url, for testing when occur error
+      const response = await fetch("https://all-movie-store-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json");
       
       if (!response.ok) {
         throw new Error("Something is wrong!");
@@ -40,8 +41,17 @@ function App() {
     fetchMoviesHandler();
   }, [fetchMoviesHandler]);
 
-  function addMovieHandler(movie) {
-    console.log(movie)
+  async function addMovieHandler(movie) {
+    const response = await fetch("https://all-movie-store-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json", {
+      method : "POST",
+      body : JSON.stringify(movie),
+      headers : {
+        'Content-Type' : 'application/json'
+      }
+    });
+
+    const data = await response.json();
+    console.log(data);
   }
 
   let content = "Movies not found!";
