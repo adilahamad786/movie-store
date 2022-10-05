@@ -14,22 +14,25 @@ function App() {
       setIsLoading(true);
       // const response = await fetch("https://swapi.dev/api/films/");
       // const response = await fetch("https://swapi.dev/api/film/"); // wrong url, for testing when occur error
-      const response = await fetch("https://all-movie-store-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json");
-      
-      if (!response.ok) {
+      const rawData = await fetch("https://all-movie-store-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json");
+
+      if (!rawData.ok) {
         throw new Error("Something is wrong!");
       }
-      
-      const data = await response.json();
-      const transformedMoviesDate = data.results.map(movieData => {
-        return {
-          id : movieData.episode_id,
-          title : movieData.title,
-          openingText : movieData.opening_crawl,
-          releaseDate : movieData.release_date
-        }
-      })
-      setMovies(transformedMoviesDate);
+
+      const moviesData = await rawData.json();
+
+      let loadedMovies = [];
+      for (const key in moviesData) {
+        loadedMovies.push({
+          id : key,
+          title : moviesData[key].title,
+          openingText : moviesData[key].openingText,
+          releaseDate : moviesData[key].releaseDate,
+        });
+      }
+
+      setMovies(loadedMovies);
     }
     catch (error) {
       setError(error.message);
